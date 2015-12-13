@@ -1,0 +1,51 @@
+<div class="row">
+   <form class="col s6">
+      <div class="row">
+         <h5 class="col s12">Add a new order</h5>
+         <div class="col s12">
+            <label>Customer Name</label>
+            <select class="browser-default" ng-model="newOrder.customer" ng-options="customer as customer.name for customer in customers">
+            </select>
+         </div>
+      </div>
+      <div class="row">
+         <div class="input-field col s6">
+            <input type="number" ng-model="newOrder.quantity" />
+            <label>Quantity</label>
+         </div>
+         <div class="col s6">
+            <label>Product</label>
+            <select class="browser-default" ng-model="newOrder.product" ng-options="product as product.name for product in products">
+            </select>
+         </div>
+      </div>
+      <div class="row">
+         <div class="input-field col s12">
+            <button ng-click='addNewOrder();' class="waves-effect waves-light btn">Add Order</button>
+         </div>
+      </div>
+   </form>
+</div>
+<div class="row">
+   <div class="col s4">
+      <input type="text" ng-model="orderFilter" placeholder="Search order..." />
+   </div>
+   <table>
+      <thead>
+         <tr>
+            <th>Customer Name</th>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Date Added</th>
+         </tr>
+      </thead>
+      <tbody>
+         <tr ng-repeat="order in orders | filter:orderFilter">
+            <td><span ng-bind="order._customer.name"></span></td>
+            <td><span ng-bind="order.product"></span></td>
+            <td><span ng-bind="order.quantity"></span></td>
+            <td><span ng-bind="order.dateCreated | date: 'MMMM d, yyyy'"></span></td>
+         </tr>
+      </tbody>
+   </table>
+</div>

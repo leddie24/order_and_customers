@@ -1,0 +1,43 @@
+<div class="row">
+   <div class="col s12">
+      <div id="error-dialog" ng-show="errorMessage.length > 0" class="red lighten-2 col s6 valign-wrapper">
+         <i class="valign material-icons">error</i><span ng-bind="errorMessage" class="valign"></span>
+      </div>
+   </div>
+   <form class="col s6">
+      <div class="row">
+         <div class="input-field col s12">
+            <input type="text" ng-model="newCustomer.name" />
+            <label>Customer Name</label>
+         </div>
+      </div>
+      <div class="row">
+         <div class="input-field col s12">
+            <button ng-click='addNewCustomer();' class="waves-effect waves-light btn">Add Customer</button>
+         </div>
+      </div>
+   </form>
+</div>
+<div class="row">
+   <div class="col s4">
+      <input type="text" ng-model="customerFilter" placeholder="Search customers..." />
+   </div>
+   <table>
+      <thead>
+         <tr>
+            <th>Customer Name</th>
+            <th>Date Added</th>
+            <th>Actions</th>
+         </tr>
+      </thead>
+      <tbody>
+         <tr ng-repeat="customer in customers | filter:customerFilter">
+            <td><span ng-bind="customer.name"></span></td>
+            <td><span ng-bind="customer.dateCreated | date: 'MMMM d, yyyy'"></span></td>
+            <td>
+               <button ng-click="removeCustomer(customer);" class="waves-effect waves-light btn red">Remove</button>
+            </td>
+         </tr>
+      </tbody>
+   </table>
+</div>

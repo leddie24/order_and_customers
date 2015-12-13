@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="orders_customers_app">
+<head>
+   <meta charset="UTF-8">
+   <title>Orders and Customers</title>
+   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+   <link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
+   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+   <script type="text/javascript" src="angular.js"></script>
+   <script src="angular-route.min.js"></script>
+   <style>
+   #error-dialog {
+      padding: 15px;
+   }
+
+   #error-dialog i {
+      margin-right: 5px;
+   }
+   </style>
+   <script type="text/javascript">
+
+   var ocApp = angular.module('orders_customers_app', ['ngRoute']);
+   
+   ocApp.config(function ($routeProvider) {
+      $routeProvider
+         .when('/', {
+            templateUrl: './partials/customers.html',
+            controller: 'customersController'
+         })
+         .when('/orders', {
+            templateUrl: './partials/orders.html',
+            controller: 'ordersController'
+         })
+         .otherwise({
+            redirectTo: '/'
+         });
+   });
+
+   ocApp.factory('ProductFactory', function($http) {
+      var factory = {};
+      var products = [
+      {
+         name: 'Nike Shoes'
+      },
+      {
+         name: 'Black Belts'
+      },
+      {
+         name: 'Ice Creams'
+      },
+      {
+         name: 'Candles'
+      }];
+
+      factory.getProducts = function(callback) {
+         callback(products);
+      }
+
+      return factory;
+   });
+
+   ocApp.factory('CustomerFactory', function($http) {
+      var factory = {};
+
+      factory.getCustomers = function(callback) {
+         $http.get('/getcustomers').then(
+         function(output) {
+            console.log("Got customers");
+            callback(output.data);
+         }, function(output) {
+            console.log("Error getting customer");
+         });
+      }
+
+      factory.addNewCustomer = function(customer, callback) {
+         $http.post('/addnewcustomer', customer).then(
+         function (response) {
+            callback(response);
+         }, function (response) {
+            callback(response);
+         });
+      }
+
+      factory.removeCustomer = function(customer, callback) {
+         $http.post('/removeCustomer', customer);
+         callback();
+      }
+
+      return factory;
+   });
+
+   ocApp.factory('OrderFactory', function($http) {
+      var factory = {};
+
+      factory.getOrders = function(callback) {
+         $http.get('/orders').then(
+         function(output) {
+            console.log("Got order");
+            callback(output.data);
+         }, function(output) {
+            console.log("Error getting Orders");
+         });
+      }
+
+      factory.addNewOrder = function(order, callback) {
+         console.log(order);
+         $http.post('/addneworder', order).then(
+         function (response){
+            callback(response);
+         },
+         function (response){
+            callback(response);
+         });
+      }
+
+      return factory;
+   });
+
+   ocApp.controller('customersController', function($scope, CustomerFactory) {
+      $scope.index = function() {
+         CustomerFactory.getCustomers(function(data) {
+            $scope.customers = data;
+         });
+      }
+
+      $scope.addNewCustomer = function() {
+         CustomerFactory.addNewCustomer($scope.newCustomer, function(response) {
+            if (response.status == 200) {
+               $scope.errorMessage = null;
+               $scope.newCustomer = {};
+               $scope.index();
+            } else {
+               $scope.errorMessage = response.data;
+            }
+         });
+      }
+
+      $scope.removeCustomer = function(customer) {
+         console.log(customer);
+         CustomerFactory.removeCustomer(customer, function() {
+            $scope.index();
+         });
+      }
+
+      $scope.index();
+   });
+
+   ocApp.controller('ordersController', function($scope, CustomerFactory, 
+      OrderFactory, ProductFactory) {
+      
+      CustomerFactory.getCustomers(function(data) {
+         $scope.customers = data;
+         console.log($scope.customers);
+      });
+
+      ProductFactory.getProducts(function(data) {
+         $scope.products = data;
+      });
+
+      $scope.index = function() {
+         OrderFactory.getOrders(function(data) {
+            $scope.orders = data;
+            console.log($scope.orders);
+         });
+      }
+
+      $scope.addNewOrder = function() {
+         OrderFactory.addNewOrder($scope.newOrder, function(response) {
+            if (response.status == 200) {
+               alert('added new order');
+               $scope.newOrder = {};
+               $scope.index();
+            } else {
+               console.log('Error adding new order');
+            }
+         });
+      }
+      $scope.index();
+   });
+
+
+   </script>
+</head>
+<body>
+   <div class="container">
+      <div class="row">
+           <nav>
+             <div class="nav-wrapper">
+               <ul id="nav-mobile" class="left">
+                 <li><a href="#/customers">Customers</a></li>
+                 <li><a href="#/orders">Orders</a></li>
+               </ul>
+             </div>
+           </nav>
+      </div>
+      <div class="row" ng-view>
+
+      </div>
+   </div>
+   <script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>
+   <script type="text/javascript" src="js/materialize.min.js"></script>
+</body>
+</html>
